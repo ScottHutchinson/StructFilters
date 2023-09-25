@@ -38,6 +38,7 @@ type Model = {
     DummyRoot: RoseTree<FieldData>
     ExpandLevel: int
     MaxLevel: int
+    Search_Text: string
 }
     with 
         member this.ParentStruct = this.DummyRoot.Fields.Head

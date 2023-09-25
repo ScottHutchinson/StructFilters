@@ -19,17 +19,37 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock
-            Grid.Row="0"
-            Margin="10,5,10,0"
-            FontSize="14">
-            <TextBlock.Text>
-                <MultiBinding StringFormat="Message Type: 0x{0:X4}, {1}">
-                    <Binding Path="MsgType.ID" />
-                    <Binding Path="MsgType.Name" />
-                </MultiBinding>
-            </TextBlock.Text>
-        </TextBlock>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock
+                    Margin="10,5,10,0"
+                    FontSize="14">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Message Type: 0x{0:X4}, {1}">
+                            <Binding Path="MsgType.ID" />
+                            <Binding Path="MsgType.Name" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel 
+                FocusManager.FocusedElement="{Binding ElementName=txtSearch}"
+                Margin="10,5,10,0"
+                Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock 
+                    Text="Search: " HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <TextBox 
+                    Name="txtSearch"
+                    Width="200" 
+                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                    AcceptsReturn="False"
+                    VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
         <TreeView
             x:Name="StructsTreeView"
             Grid.Row="1"
@@ -38,8 +58,9 @@
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="Focusable" Value="False" />
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>

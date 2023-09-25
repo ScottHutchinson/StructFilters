@@ -1,6 +1,5 @@
 ﻿module NGDartStructFilters.StructFilters
 
-
 #nowarn "9" //FSharp.NativeInterop.NativePtr.ofNativeInt can't be verified as safe
 
 open System.Diagnostics
@@ -25,7 +24,7 @@ module App =
     let loadImplementedStructs () =
         match implementedStructs with
         | [] ->
-            let filePath = Path.Combine(exeFolderPath, """Data\MsgTypeDefs\implemented_structs.json""")
+            let filePath = Path.Combine(exeFolderPath, """implemented_structs.json""")
             let str = File.ReadAllText filePath
             implementedStructs <- JsonConvert.DeserializeObject<ImplementedStruct list>(str)
         | _ -> ()
@@ -33,8 +32,9 @@ module App =
     let mutable unmodifiedModel = { 
         MsgType = { ID = 0; Name = "NullMsg" }
         DummyRoot = FieldData.empty |> RoseTree.asLeaf
-        ExpandLevel = 2 // TODO: Move outside of the model?
-        MaxLevel = 2 // TODO: Move outside of the model?
+        ExpandLevel = 2
+        MaxLevel = 2
+        Search_Text = ""
     }
 
     let mutable configFolderPath = ""
@@ -115,6 +115,7 @@ module App =
               DummyRoot = loadSavedChanges dummyRoot
               ExpandLevel = unmodifiedModel.ExpandLevel
               MaxLevel = unmodifiedModel.MaxLevel
+              Search_Text = unmodifiedModel.Search_Text
             }
         unmodifiedModel
 
@@ -146,20 +147,23 @@ module App =
         | ExpandAll
         | CollapseAll
         | SetFilteringEnabled of isEnabled: bool
+        | SearchText of searchText: string
 
     let selectAncestorMsg fieldId msg = SelectAncestorMsg (fieldId, msg)
     let outSelectChild isGmlSelected msg = OutSelectChild (isGmlSelected, msg)
     let selectMsg isGmlSelected msg = SelectMsg (isGmlSelected, msg)
 
     let private isGmlImplementedForParent fd =
-        implementedStructs
-        |> List.tryFind (fun s -> s.Name = fd.ParentType && s.Gml)
-        |> Option.isSome
+        true
+        //implementedStructs
+        //|> List.tryFind (fun s -> s.Name = fd.ParentType && s.Gml)
+        //|> Option.isSome
 
     let private isGmlImplementedForStruct fd =
-        implementedStructs
-        |> List.tryFind (fun s -> s.Name = fd.Type && s.Gml)
-        |> Option.isSome
+        true
+        //implementedStructs
+        //|> List.tryFind (fun s -> s.Name = fd.Type && s.Gml)
+        //|> Option.isSome
 
     let private isCmlImplementedForParent fd =
         implementedStructs
@@ -303,6 +307,8 @@ module App =
         | SetFilteringEnabled isEnabled ->
             isFilteringEnabled <- isEnabled
             m
+        | SearchText searchText ->
+            { m with Search_Text = searchText }
 
     let mapOutMsg = function
         | OutSelectChild (isGmlSelected, msg) -> 
@@ -318,6 +324,15 @@ module App =
 
     module Self =
         let get m = m.Self
+
+    let caseInsensitiveContains (haystack: string) (needle: string) =
+        haystack.IndexOf(needle, System.StringComparison.OrdinalIgnoreCase) >= 0
+
+    let isItemSelected (searchText: string) (fd: FieldData) =
+        if System.String.IsNullOrWhiteSpace searchText then
+            false
+        else
+            caseInsensitiveContains fd.Type searchText || caseInsensitiveContains fd.Name searchText
 
     let rec fieldBindings level () =
         if level > unmodifiedModel.MaxLevel then 
@@ -356,7 +371,16 @@ module App =
                 getMenuItemHeader $"Clear all fields of {s.Data.Type} for GML")
             "ContextCancel" |> Binding.cmd (LeafMsg ContextCancel)
             "IsEnabled" |> Binding.oneWay(fun ((m: Model), _) -> not m.IsEmpty)
-            "IsExpanded" |> Binding.oneWay(fun ((m: Model), _) -> level < m.ExpandLevel)
+            "IsExpanded" |> Binding.oneWay(fun ((m: Model), _) -> 
+                level < m.ExpandLevel
+            )
+            "IsSelected" |> Binding.oneWay(fun ((m: Model), { Self = (s: RoseTree<FieldData>) }) -> 
+                let isSelected = isItemSelected m.Search_Text s.Data
+                if isSelected then
+                    Debug.WriteLine($"****** Name: {s.Data.Name}, Type: {s.Data.Type} selected")
+                isSelected
+            )
+
             (* TODO: Special DX sub-MTs 
                1. Hide the GML checkbox.
                (because that would duplicate functionality on the Special DX tab).
@@ -387,6 +411,10 @@ module App =
         ]
 
     let rootBindings () : Binding<Model, Msg> list = [
+        "SearchText" |> Binding.twoWay(
+            (fun m -> m.Search_Text),
+            (fun newVal _ -> newVal |> SearchText)
+        )
         "IsEnabled" |> Binding.oneWay(fun m -> not m.IsEmpty)
         "IsFilteringEnabled" |> Binding.twoWay(
             (fun _ -> isFilteringEnabled),
@@ -443,6 +471,8 @@ module PublicAPI =
             let showDialogWithConfig (window: Window) program =
                 App.waitWindow.Show()
                 WpfProgram.startElmishLoop window program
+                let txtSearch = window.FindName("txtSearch") :?> TextBox
+                txtSearch.Focus() |> ignore
                 window.ShowDialog ()
 
             let isAccepted = 
