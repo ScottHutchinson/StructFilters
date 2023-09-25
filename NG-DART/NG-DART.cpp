@@ -48,7 +48,8 @@ int main() {
             std::cout << "\n  could not initialize COM";
             return 1;
         }
-        stMsgTypeDefRecType mt{ .m_wMsgTypeID=0x970A, .m_szMsgTypeName="Dabblers_MT", .m_szMsgTypeFormat="dabblers" };
+        //stMsgTypeDefRecType mt{ .m_wMsgTypeID=0x0205, .m_szMsgTypeName="Dabblers_MT", .m_szMsgTypeFormat="dabblers" };
+        stMsgTypeDefRecType mt{ .m_wMsgTypeID = 0x0414, .m_szMsgTypeName = "Inbent_MT", .m_szMsgTypeFormat = "inbent" };
         bool isSuccessful{};
         DWORD structHdrResSize{};
         auto structHdrResHandle = GetStructHdrResourceFromLoadedDLL(structHdrResSize);
