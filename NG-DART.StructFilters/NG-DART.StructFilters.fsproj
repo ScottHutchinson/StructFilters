@@ -29,7 +29,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="implemented_structs.json" />
+        <Content Include="implemented_structs.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Compile Include="AssemblyInfo.fs" />
         <Compile Include="List.fs" />
         <Compile Include="RoseTree.fs" />
