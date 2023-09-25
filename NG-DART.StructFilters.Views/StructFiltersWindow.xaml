@@ -1,0 +1,237 @@
+﻿<Window
+    x:Class="NGDartStructFilters.Views.StructFiltersWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:NGDartStructFilters;assembly=NG-DART.StructFilters"
+    Title="NG-DART Message Type Structure Filters"
+    d:DataContext="{x:Static vm:StructFilters.designVm}"
+    d:DesignHeight="450"
+    d:DesignWidth="700"
+    SizeToContent="Width"
+    MinWidth="800"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Grid Background="#F0F0F0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock
+            Grid.Row="0"
+            Margin="10,5,10,0"
+            FontSize="14">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="Message Type: 0x{0:X4}, {1}">
+                    <Binding Path="MsgType.ID" />
+                    <Binding Path="MsgType.Name" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+        <TreeView
+            x:Name="StructsTreeView"
+            Grid.Row="1"
+            Margin="10,10,10,10"
+            ItemsSource="{Binding Fields}">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="Focusable" Value="False" />
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+                    <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding ChildFields}">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}" IsOpen="{Binding IsContextMenuOpen}">
+                                <MenuItem Command="{Binding ContextSelectAll}" Header="{Binding ContextSelectAllHeader}" />
+                                <MenuItem Command="{Binding ContextClearAll}" Header="{Binding ContextClearAllHeader}" />
+                                <MenuItem Command="{Binding ContextCancel}" Header="Cancel" />
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                        <CheckBox
+                            Content="GML    "
+                            IsChecked="{Binding IsGml}"
+                            IsEnabled="{Binding GmlImplementedForParent}">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding GmlImplementedForParent}" Value="True">
+                                            <Setter Property="FontWeight" Value="Bold" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ParentStruct}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                        <CheckBox
+                            Content="CML    "
+                            IsChecked="{Binding IsCml}"
+                            IsEnabled="{Binding CmlImplementedForParent}" />
+                        <CheckBox
+                            Content="CML Change Field    "
+                            IsChecked="{Binding IsCmlChangeField}"
+                            IsEnabled="{Binding CmlChangeFieldImplementedForParent}">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ParentStruct}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                        <CheckBox
+                            Content="CML Entity    "
+                            IsChecked="{Binding IsCmlEntity}"
+                            IsEnabled="{Binding CmlEntityImplementedForParent}">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ParentStruct}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                        <TextBlock Text="|  " />
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Foreground="Blue" Text=" (" />
+                        <TextBlock Foreground="Blue" Text="{Binding Union}" />
+                        <TextBlock Foreground="Blue" Text=": " />
+                        <TextBlock Foreground="Blue" Text="{Binding Type}">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding GmlImplementedForStruct}" Value="True">
+                                            <Setter Property="FontWeight" Value="Bold" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <TextBlock Foreground="Blue" Text=")  " />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="209*" />
+                <ColumnDefinition Width="141*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel
+                Grid.Column="0"
+                Margin="0,0,0,10"
+                HorizontalAlignment="Left"
+                Orientation="Horizontal" Grid.ColumnSpan="2" Width="553">
+                <Grid x:Name="SpinnerNumericUpDownControl" Margin="10,0">
+                    <!--  From https://stackoverflow.com/a/21907688/5652483  -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="Expand Level: " />
+                    <TextBlock
+                        Grid.Column="1"
+                        MinWidth="14"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Text="{Binding ExpandLevel}" />
+                    <Grid
+                        x:Name="GridRoot"
+                        Grid.Column="2"
+                        Width="25">
+                        <Grid.RowDefinitions>
+                            <RowDefinition MaxHeight="18" />
+                            <RowDefinition Height="0.00001*" />
+                            <RowDefinition MaxHeight="18" />
+                        </Grid.RowDefinitions>
+                        <RepeatButton Command="{Binding IncreaseExpandLevel}" Focusable="False">
+                            <Grid>
+                                <Path
+                                    x:Name="IncreaseArrow"
+                                    Data="M 0 4 L 8 4 L 4 0 Z"
+                                    Stroke="Blue"
+                                    StrokeThickness="1" />
+                            </Grid>
+                        </RepeatButton>
+                        <RepeatButton
+                            Grid.Row="2"
+                            Command="{Binding DecreaseExpandLevel}"
+                            Focusable="False">
+                            <Grid>
+                                <Path
+                                    x:Name="DecreaseArrow"
+                                    Data="M 0 0 L 4 4 L 8 0 Z"
+                                    Stroke="Blue"
+                                    StrokeThickness="1" />
+                            </Grid>
+                        </RepeatButton>
+                    </Grid>
+                </Grid>
+                <Button
+                    Margin="5,0"
+                    Padding="5,2"
+                    Command="{Binding ExpandAll}"
+                    Content="Expand All" />
+                <Button
+                    Margin="5,0"
+                    Padding="5,2"
+                    Command="{Binding CollapseAll}"
+                    Content="Collapse All" />
+                <Button
+                    Margin="5,0"
+                    Padding="5,2"
+                    Command="{Binding GmlSelectAll}"
+                    Content="Select All for GML" />
+                <Button
+                    Margin="5,0"
+                    Padding="5,2"
+                    Command="{Binding GmlClearAll}"
+                    Content="Clear All for GML" />
+            </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                Margin="0,0,10,10"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal" Width="190">
+                <CheckBox
+                    Content="Enable"
+                    ToolTip="Uncheck and save to temporarily disable all structure filters"
+                    Margin="5,0"
+                    Padding="5,2"
+                    IsChecked="{Binding IsFilteringEnabled}" 
+                    VerticalContentAlignment="Center"
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Center" />
+                <Button
+                    Width="50"
+                    Margin="5,0"
+                    Padding="5,2"
+                    Command="{Binding Save}"
+                    Content="Save"
+                    IsEnabled="{Binding IsEnabled}" />
+                <Button
+                    Width="50"
+                    Margin="5,0"
+                    Padding="5,2"
+                    Command="{Binding Cancel}"
+                    Content="Cancel"
+                    IsCancel="true" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

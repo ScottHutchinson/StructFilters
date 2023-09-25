@@ -1,0 +1,18 @@
+﻿# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+###############################
+# Core EditorConfig Options   #
+###############################
+# All files
+[*]
+indent_style = space
+# Code files
+[*.{cs,csx,fs,fsx,vb,vbx}]
+indent_size = 4
+insert_final_newline = true
+charset = utf-8-bom
+dotnet_analyzer_diagnostic.severity = suggestion
+
+# IDE0130: Namespace does not match folder structure
+dotnet_style_namespace_match_folder = false
+# CA1020: Consider merging the types defined in 'NGDartStructFilters.Views' with another namespace.
+dotnet_diagnostic.CA1020.severity = silent

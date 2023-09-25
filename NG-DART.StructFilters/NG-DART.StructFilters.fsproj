@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+        <Platforms>AnyCPU</Platforms>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <WarningLevel>5</WarningLevel>
+        <Deterministic>false</Deterministic>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+        <NoWarn>NU1603</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <Tailcalls>true</Tailcalls>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <Tailcalls>true</Tailcalls>
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="implemented_structs.json" />
+        <Compile Include="AssemblyInfo.fs" />
+        <Compile Include="List.fs" />
+        <Compile Include="RoseTree.fs" />
+        <Compile Include="Domain.fs" />
+        <Compile Include="FieldData.fs" />
+        <Compile Include="WinAPI.fs" />
+        <Compile Include="Translation.fs" />
+        <Compile Include="StructFilters.fs" />
+        <Compile Include="ExcelInterop.fs" />
+        <None Include="Script.fsx" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Update="FSharp.Core" Version="6.0.5" /> <!--pinned-->
+        <PackageReference Include="Elmish.WPF" Version="4.0.0-beta-45" />
+        <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1001" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="PresentationCore" />
+      <Reference Include="PresentationFramework" />
+      <Reference Include="WindowsBase" />
+    </ItemGroup>
+
+</Project>
