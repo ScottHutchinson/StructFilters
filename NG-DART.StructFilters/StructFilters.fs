@@ -35,6 +35,7 @@ module App =
         ExpandLevel = 2
         MaxLevel = 2
         Search_Text = ""
+        SearchEnterText = ""
     }
 
     let mutable configFolderPath = ""
@@ -116,6 +117,7 @@ module App =
               ExpandLevel = unmodifiedModel.ExpandLevel
               MaxLevel = unmodifiedModel.MaxLevel
               Search_Text = unmodifiedModel.Search_Text
+              SearchEnterText = ""
             }
         unmodifiedModel
 
@@ -148,6 +150,7 @@ module App =
         | CollapseAll
         | SetFilteringEnabled of isEnabled: bool
         | SearchText of searchText: string
+        | SearchEnter
 
     let selectAncestorMsg fieldId msg = SelectAncestorMsg (fieldId, msg)
     let outSelectChild isGmlSelected msg = OutSelectChild (isGmlSelected, msg)
@@ -309,6 +312,8 @@ module App =
             m
         | SearchText searchText ->
             { m with Search_Text = searchText }
+        | SearchEnter ->
+            { m with SearchEnterText = m.Search_Text }
 
     let mapOutMsg = function
         | OutSelectChild (isGmlSelected, msg) -> 
@@ -375,7 +380,7 @@ module App =
                 level < m.ExpandLevel
             )
             "IsSelected" |> Binding.oneWay(fun ((m: Model), { Self = (s: RoseTree<FieldData>) }) -> 
-                let isSelected = isItemSelected m.Search_Text s.Data
+                let isSelected = isItemSelected m.SearchEnterText s.Data
                 if isSelected then
                     Debug.WriteLine($"****** Name: {s.Data.Name}, Type: {s.Data.Type} selected")
                 isSelected
@@ -415,6 +420,7 @@ module App =
             (fun m -> m.Search_Text),
             (fun newVal _ -> newVal |> SearchText)
         )
+        "SearchEnter" |> Binding.cmd SearchEnter
         "IsEnabled" |> Binding.oneWay(fun m -> not m.IsEmpty)
         "IsFilteringEnabled" |> Binding.twoWay(
             (fun _ -> isFilteringEnabled),

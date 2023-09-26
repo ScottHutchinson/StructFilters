@@ -47,7 +47,11 @@
                     Width="200" 
                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                     AcceptsReturn="False"
-                    VerticalAlignment="Center"/>
+                    VerticalAlignment="Center">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding SearchEnter}" Key="Enter" />
+                    </TextBox.InputBindings>
+                </TextBox>
             </StackPanel>
         </Grid>
         <TreeView
