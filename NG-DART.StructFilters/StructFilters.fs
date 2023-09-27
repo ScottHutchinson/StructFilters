@@ -333,7 +333,7 @@ module App =
     let caseInsensitiveContains (haystack: string) (needle: string) =
         haystack.IndexOf(needle, System.StringComparison.OrdinalIgnoreCase) >= 0
 
-    let isItemSelected (searchText: string) (fd: FieldData) =
+    let isFoundInSearch (searchText: string) (fd: FieldData) =
         if System.String.IsNullOrWhiteSpace searchText then
             false
         else
@@ -377,10 +377,10 @@ module App =
             "ContextCancel" |> Binding.cmd (LeafMsg ContextCancel)
             "IsEnabled" |> Binding.oneWay(fun ((m: Model), _) -> not m.IsEmpty)
             "IsExpanded" |> Binding.oneWay(fun ((m: Model), _) -> 
-                level < m.ExpandLevel
+                level < m.ExpandLevel // TODO: || is an ancestor of the selected item found in a search
             )
             "IsSelected" |> Binding.oneWay(fun ((m: Model), { Self = (s: RoseTree<FieldData>) }) -> 
-                let isSelected = isItemSelected m.SearchEnterText s.Data
+                let isSelected = isFoundInSearch m.SearchEnterText s.Data
                 if isSelected then
                     Debug.WriteLine($"****** Name: {s.Data.Name}, Type: {s.Data.Type} selected")
                 isSelected
