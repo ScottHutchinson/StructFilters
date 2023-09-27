@@ -36,6 +36,7 @@ module App =
         MaxLevel = 2
         Search_Text = ""
         SearchEnterText = ""
+        SearchFoundId = None
     }
 
     let mutable configFolderPath = ""
@@ -117,7 +118,8 @@ module App =
               ExpandLevel = unmodifiedModel.ExpandLevel
               MaxLevel = unmodifiedModel.MaxLevel
               Search_Text = unmodifiedModel.Search_Text
-              SearchEnterText = ""
+              SearchEnterText = unmodifiedModel.SearchEnterText
+              SearchFoundId = unmodifiedModel.SearchFoundId
             }
         unmodifiedModel
 
@@ -151,8 +153,8 @@ module App =
         | SetFilteringEnabled of isEnabled: bool
         | SearchText of searchText: string
         | SearchEnter
+        | SearchFoundMsg of foundFieldId: FieldId
 
-    let selectAncestorMsg fieldId msg = SelectAncestorMsg (fieldId, msg)
     let outSelectChild isGmlSelected msg = OutSelectChild (isGmlSelected, msg)
     let selectMsg isGmlSelected msg = SelectMsg (isGmlSelected, msg)
 
@@ -314,6 +316,8 @@ module App =
             { m with Search_Text = searchText }
         | SearchEnter ->
             { m with SearchEnterText = m.Search_Text }
+        | SearchFoundMsg fldId ->
+            { m with SearchFoundId = Some fldId }
 
     let mapOutMsg = function
         | OutSelectChild (isGmlSelected, msg) -> 
@@ -338,6 +342,18 @@ module App =
             false
         else
             caseInsensitiveContains fd.Type searchText || caseInsensitiveContains fd.Name searchText
+
+    let isAncestorOfFoundField (s: RoseTree<FieldData>) =
+        let rec loop (s: RoseTree<FieldData>) =
+            (false, s.Fields)
+            ||> List.fold (fun isFldAncestor fld -> 
+                match unmodifiedModel.SearchFoundId with
+                | Some foundId ->
+                    fld.Data.Id = foundId
+                | None ->
+                    loop fld
+            )
+        loop s
 
     let rec fieldBindings level () =
         if level > unmodifiedModel.MaxLevel then 
@@ -376,13 +392,16 @@ module App =
                 getMenuItemHeader $"Clear all fields of {s.Data.Type} for GML")
             "ContextCancel" |> Binding.cmd (LeafMsg ContextCancel)
             "IsEnabled" |> Binding.oneWay(fun ((m: Model), _) -> not m.IsEmpty)
-            "IsExpanded" |> Binding.oneWay(fun ((m: Model), _) -> 
-                level < m.ExpandLevel // TODO: || is an ancestor of the selected item found in a search
+            "IsExpanded" |> Binding.oneWay(fun ((m: Model), { Self = (s: RoseTree<FieldData>) }) -> 
+                level < m.ExpandLevel || isAncestorOfFoundField s
             )
             "IsSelected" |> Binding.oneWay(fun ((m: Model), { Self = (s: RoseTree<FieldData>) }) -> 
                 let isSelected = isFoundInSearch m.SearchEnterText s.Data
                 if isSelected then
+                    // TODO: Send a SearchFoundMsg to update the model instead of the unmodifiedModel.
+                    unmodifiedModel <- { unmodifiedModel with SearchFoundId = Some s.Data.Id }
                     Debug.WriteLine($"****** Name: {s.Data.Name}, Type: {s.Data.Type} selected")
+
                 isSelected
             )
 

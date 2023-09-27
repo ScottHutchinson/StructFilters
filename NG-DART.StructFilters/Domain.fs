@@ -40,6 +40,7 @@ type Model = {
     MaxLevel: int
     Search_Text: string
     SearchEnterText: string
+    SearchFoundId: FieldId option
 }
     with 
         member this.ParentStruct = this.DummyRoot.Fields.Head
