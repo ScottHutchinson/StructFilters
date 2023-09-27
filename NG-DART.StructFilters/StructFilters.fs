@@ -344,16 +344,20 @@ module App =
             caseInsensitiveContains fd.Type searchText || caseInsensitiveContains fd.Name searchText
 
     let isAncestorOfFoundField (s: RoseTree<FieldData>) =
-        let rec loop (s: RoseTree<FieldData>) =
-            (false, s.Fields)
-            ||> List.fold (fun isFldAncestor fld -> 
-                match unmodifiedModel.SearchFoundId with
-                | Some foundId ->
-                    fld.Data.Id = foundId
-                | None ->
-                    loop fld
-            )
-        loop s
+        match unmodifiedModel.SearchFoundId with
+        | Some foundId ->
+            let rec loop (s: RoseTree<FieldData>) =
+                (false, s.Fields)
+                ||> List.fold (fun isFldAncestor fld -> 
+                    let isAncestor = fld.Data.Id = foundId
+                    if isAncestor then
+                        true
+                    else
+                        loop fld
+                )
+            loop s
+        | None ->
+            false
 
     let rec fieldBindings level () =
         if level > unmodifiedModel.MaxLevel then 

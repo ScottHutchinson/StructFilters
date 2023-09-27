@@ -28,7 +28,7 @@ module RegexParsers =
     let structOrUnionEnd = Regex "^\s*};"
     let boolOperator = Regex "^\s*bool (?:operator|equals)" // struct has operator, union has equals function
     let parentStructUnion = Regex "union ParentStructUnion"
-    let padOrSpareFieldName = Regex "(^pad|^dart_pad|^unused|^not_used|^spare|spare$|\s*spare_?\d+)"
+    let padOrSpareFieldName = Regex "(^pad$|^pad_?\d+|^dart_pad|^unused|^not_used|^spare|spare$|\s*spare_?\d+)"
 
 let parse (reg: Regex) f str =
     let m = reg.Match str
