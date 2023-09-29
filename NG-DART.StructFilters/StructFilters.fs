@@ -313,7 +313,7 @@ module App =
             isFilteringEnabled <- isEnabled
             m
         | SearchText searchText ->
-            { m with Search_Text = searchText }
+            { m with Search_Text = searchText; SearchEnterText = "" }
         | SearchEnter ->
             { m with SearchEnterText = m.Search_Text }
         | SearchFoundMsg fldId ->
