@@ -62,6 +62,10 @@
             >
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
+                    <Style.Resources>
+                        <!--Highlight the selected item found in search in yellow.-->
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Yellow" />
+                    </Style.Resources>
                     <Setter Property="Focusable" Value="False" />
                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
