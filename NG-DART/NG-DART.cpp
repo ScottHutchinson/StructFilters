@@ -43,8 +43,7 @@ HGLOBAL GetStructHdrResourceFromLoadedDLL(DWORD& resourceSize) {
 
 int main() {
     try {
-        HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-        if (!SUCCEEDED(hr)) {
+        if (HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED); !SUCCEEDED(hr)) {
             std::cout << "\n  could not initialize COM";
             return 1;
         }
