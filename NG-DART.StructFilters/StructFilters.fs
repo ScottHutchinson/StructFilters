@@ -115,11 +115,11 @@ module App =
         unmodifiedModel <- 
             { MsgType = { ID = msgTypeID; Name = msgTypeName }
               DummyRoot = loadSavedChanges dummyRoot
-              ExpandLevel = unmodifiedModel.ExpandLevel
-              MaxLevel = unmodifiedModel.MaxLevel
-              Search_Text = unmodifiedModel.Search_Text
-              SearchEnterText = unmodifiedModel.SearchEnterText
-              SearchFoundId = unmodifiedModel.SearchFoundId
+              ExpandLevel = 2
+              MaxLevel = 2
+              Search_Text = ""
+              SearchEnterText = ""
+              SearchFoundId = None
             }
         unmodifiedModel
 
