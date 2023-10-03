@@ -69,7 +69,7 @@
                     <Setter Property="Focusable" Value="False" />
                     <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
                     <EventSetter Event="Selected" Handler="StructsTreeView_SelectedItemChanged" />
                 </Style>
             </TreeView.ItemContainerStyle>
