@@ -29,7 +29,7 @@
                     Margin="10,5,10,0"
                     FontSize="14">
                     <TextBlock.Text>
-                        <MultiBinding StringFormat="Message Type: 0x{0:X4}, {1}">
+                        <MultiBinding StringFormat="Message Type: 0x{0:X4}, {1}" Mode="OneTime">
                             <Binding Path="MsgType.ID" />
                             <Binding Path="MsgType.Name" />
                         </MultiBinding>
@@ -45,7 +45,7 @@
                 <TextBox 
                     Name="txtSearch"
                     Width="200" 
-                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                    Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" 
                     AcceptsReturn="False"
                     VerticalAlignment="Center">
                     <TextBox.InputBindings>
@@ -133,11 +133,11 @@
                             </CheckBox.Style>
                         </CheckBox>
                         <TextBlock Text="|  " />
-                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text="{Binding Name, Mode=OneWay}" />
                         <TextBlock Foreground="Blue" Text=" (" />
-                        <TextBlock Foreground="Blue" Text="{Binding Union}" />
+                        <TextBlock Foreground="Blue" Text="{Binding Union, Mode=OneWay}" />
                         <TextBlock Foreground="Blue" Text=": " />
-                        <TextBlock Foreground="Blue" Text="{Binding Type}">
+                        <TextBlock Foreground="Blue" Text="{Binding Type, Mode=OneWay}">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>
@@ -180,7 +180,7 @@
                         MinWidth="14"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        Text="{Binding ExpandLevel}" />
+                        Text="{Binding ExpandLevel, Mode=OneWay}" />
                     <Grid
                         x:Name="GridRoot"
                         Grid.Column="2"

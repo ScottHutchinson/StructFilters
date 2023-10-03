@@ -439,8 +439,7 @@ module App =
         ]
 
     let rootBindings () : Binding<Model, Msg> list = [
-        "SearchText" |> Binding.twoWay(
-            (fun m -> m.Search_Text),
+        "SearchText" |> Binding.oneWayToSource(
             (fun newVal _ -> newVal |> SearchText)
         )
         "SearchEnter" |> Binding.cmd SearchEnter
